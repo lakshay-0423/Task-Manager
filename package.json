@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/lakshay-0423/Task-Manager#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1"
   },
   "devDependencies": {
