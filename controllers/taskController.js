@@ -15,7 +15,7 @@ exports.createTask = async (req, res, next) => {
 
 exports.getTasks = async (req, res, next) => {
     try {
-        const tasks = await Task.find();
+        const tasks = await Task.find({ user: req.user._id });
         res.json(tasks);
     } catch (error) {
         next(error);
