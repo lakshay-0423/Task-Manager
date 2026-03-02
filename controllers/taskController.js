@@ -24,7 +24,10 @@ exports.getTasks = async (req, res, next) => {
 
 exports.getTaskById = async (req, res, next) => {
     try {
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findOne({
+            _id: req.params.id,
+            user: req.user._id
+        });
 
         if (!task) {
             return res.status(404).json({ message: "Task not found" });
@@ -38,8 +41,11 @@ exports.getTaskById = async (req, res, next) => {
 
 exports.updateTask = async (req, res, next) => {
     try {
-        const task = await Task.findByIdAndUpdate(
-            req.params.id,
+        const task = await Task.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                user: req.user._id
+            },
             req.body,
             { new: true }
         );
@@ -56,7 +62,10 @@ exports.updateTask = async (req, res, next) => {
 
 exports.deleteTask = async (req, res, next) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id);
+        const task = await Task.findOneAndDelete({
+            _id: req.params.id,
+            user: req.user._id
+        });
 
         if (!task) {
             return res.status(404).json({ message: "Task not found" });
