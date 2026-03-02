@@ -2,7 +2,11 @@ const Task = require("../models/Task");
 
 exports.createTask = async (req, res, next) => {
     try {
-        const task = await Task.create(req.body);
+        const task = await Task.create({
+            ...req.body,
+            user: req.user._id
+        });
+
         res.status(201).json(task);
     } catch (error) {
         next(error);
