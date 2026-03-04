@@ -2,8 +2,14 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const generateToken = (id) => {
+const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "15m"
+  });
+};
+
+const generateRefreshToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
     expiresIn: "7d"
   });
 };
@@ -23,7 +29,8 @@ exports.register = async (req, res, next) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token: generateToken(user._id)
+      accessToken: generateAccessToken(user._id),
+      refreshToken: generateRefreshToken(user._id)
     });
   } catch (error) {
     next(error);
@@ -49,9 +56,27 @@ exports.login = async (req, res, next) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token: generateToken(user._id)
+      accessToken: generateAccessToken(user._id),
+      refreshToken: generateRefreshToken(user._id)
     });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.refreshToken = (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token" });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const accessToken = generateAccessToken(decoded.id);
+
+    res.json({ accessToken });
+  } catch (error) {
+    res.status(403).json({ message: "Invalid refresh token" });
   }
 };
